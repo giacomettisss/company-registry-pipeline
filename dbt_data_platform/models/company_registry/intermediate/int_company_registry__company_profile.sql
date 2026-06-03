@@ -32,11 +32,11 @@ select
     companies.company_size_code,
     companies.responsible_federative_entity,
     simples.simples_option,
-    case when simples.simples_option = 'S' then true else false end as is_simples,
+    {{ yes_no_to_boolean('simples.simples_option') }} as is_simples,
     simples.simples_option_date,
     simples.simples_exclusion_date,
     simples.mei_option,
-    case when simples.mei_option = 'S' then true else false end as is_mei,
+    {{ yes_no_to_boolean('simples.mei_option') }} as is_mei,
     simples.mei_option_date,
     simples.mei_exclusion_date
 from companies

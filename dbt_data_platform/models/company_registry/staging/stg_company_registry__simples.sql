@@ -12,13 +12,13 @@ with source as (
 
 standardized as (
     select
-        lpad(trim(cast(company_root_cnpj as varchar)), 8, '0') as company_root_cnpj,
-        nullif(trim(cast(simples_option as varchar)), '') as simples_option,
-        nullif(trim(cast(simples_option_date as varchar)), '') as simples_option_date,
-        nullif(trim(cast(simples_exclusion_date as varchar)), '') as simples_exclusion_date,
-        nullif(trim(cast(mei_option as varchar)), '') as mei_option,
-        nullif(trim(cast(mei_option_date as varchar)), '') as mei_option_date,
-        nullif(trim(cast(mei_exclusion_date as varchar)), '') as mei_exclusion_date
+        {{ standardize_code('company_root_cnpj', 8) }} as company_root_cnpj,
+        {{ clean_text('simples_option') }} as simples_option,
+        {{ parse_yyyymmdd_date('simples_option_date') }} as simples_option_date,
+        {{ parse_yyyymmdd_date('simples_exclusion_date') }} as simples_exclusion_date,
+        {{ clean_text('mei_option') }} as mei_option,
+        {{ parse_yyyymmdd_date('mei_option_date') }} as mei_option_date,
+        {{ parse_yyyymmdd_date('mei_exclusion_date') }} as mei_exclusion_date
     from source
 )
 

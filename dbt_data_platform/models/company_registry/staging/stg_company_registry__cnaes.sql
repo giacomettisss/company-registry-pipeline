@@ -7,8 +7,8 @@ with source as (
 
 standardized as (
     select
-        lpad(trim(cast(cnae_code as varchar)), 7, '0') as cnae_code,
-        nullif(trim(cast(cnae_description as varchar)), '') as cnae_description
+        {{ standardize_code('cnae_code', 7) }} as cnae_code,
+        {{ clean_text('cnae_description') }} as cnae_description
     from source
 )
 

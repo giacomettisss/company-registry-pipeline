@@ -12,13 +12,13 @@ with source as (
 
 standardized as (
     select
-        lpad(nullif(trim(cast(company_root_cnpj as varchar)), ''), 8, '0') as company_root_cnpj,
-        nullif(trim(cast(legal_name as varchar)), '') as legal_name,
-        lpad(nullif(trim(cast(legal_nature_code as varchar)), ''), 4, '0') as legal_nature_code,
-        lpad(nullif(trim(cast(responsible_qualification_code as varchar)), ''), 2, '0') as responsible_qualification_code,
-        try_cast(replace(nullif(trim(cast(share_capital as varchar)), ''), ',', '.') as decimal(18, 2)) as share_capital,
-        lpad(nullif(trim(cast(company_size_code as varchar)), ''), 2, '0') as company_size_code,
-        nullif(trim(cast(responsible_federative_entity as varchar)), '') as responsible_federative_entity
+        {{ standardize_code('company_root_cnpj', 8) }} as company_root_cnpj,
+        {{ clean_text('legal_name') }} as legal_name,
+        {{ standardize_code('legal_nature_code', 4) }} as legal_nature_code,
+        {{ standardize_code('responsible_qualification_code', 2) }} as responsible_qualification_code,
+        try_cast(replace({{ clean_text('share_capital') }}, ',', '.') as decimal(18, 2)) as share_capital,
+        {{ standardize_code('company_size_code', 2) }} as company_size_code,
+        {{ clean_text('responsible_federative_entity') }} as responsible_federative_entity
     from source
 )
 

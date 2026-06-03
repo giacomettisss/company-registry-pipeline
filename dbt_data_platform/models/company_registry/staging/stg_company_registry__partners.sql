@@ -16,17 +16,17 @@ with source as (
 
 standardized as (
     select
-        lpad(nullif(trim(cast(company_root_cnpj as varchar)), ''), 8, '0') as company_root_cnpj,
-        nullif(trim(cast(partner_identifier_code as varchar)), '') as partner_identifier_code,
-        nullif(trim(cast(partner_name as varchar)), '') as partner_name,
-        nullif(trim(cast(partner_document as varchar)), '') as partner_document,
-        lpad(nullif(trim(cast(partner_qualification_code as varchar)), ''), 2, '0') as partner_qualification_code,
-        try_strptime(nullif(trim(cast(partnership_start_date as varchar)), ''), '%Y%m%d')::date as partnership_start_date,
-        lpad(nullif(trim(cast(country_code as varchar)), ''), 3, '0') as country_code,
-        nullif(trim(cast(legal_representative_document as varchar)), '') as legal_representative_document,
-        nullif(trim(cast(legal_representative_name as varchar)), '') as legal_representative_name,
-        lpad(nullif(trim(cast(legal_representative_qualification_code as varchar)), ''), 2, '0') as legal_representative_qualification_code,
-        nullif(trim(cast(partner_age_range_code as varchar)), '') as partner_age_range_code
+        {{ standardize_code('company_root_cnpj', 8) }} as company_root_cnpj,
+        {{ clean_text('partner_identifier_code') }} as partner_identifier_code,
+        {{ clean_text('partner_name') }} as partner_name,
+        {{ clean_text('partner_document') }} as partner_document,
+        {{ standardize_code('partner_qualification_code', 2) }} as partner_qualification_code,
+        {{ parse_yyyymmdd_date('partnership_start_date') }} as partnership_start_date,
+        {{ standardize_code('country_code', 3) }} as country_code,
+        {{ clean_text('legal_representative_document') }} as legal_representative_document,
+        {{ clean_text('legal_representative_name') }} as legal_representative_name,
+        {{ standardize_code('legal_representative_qualification_code', 2) }} as legal_representative_qualification_code,
+        {{ clean_text('partner_age_range_code') }} as partner_age_range_code
     from source
 )
 
