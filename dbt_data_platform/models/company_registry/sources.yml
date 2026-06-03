@@ -12,3 +12,21 @@ sources:
             description: Raw CNAE activity code.
           - name: cnae_description
             description: Raw CNAE activity description.
+
+      - name: raw_company_registry_simples
+        description: Raw Simples Nacional records from the Receita Federal public company registry dataset.
+        columns:
+          - name: company_root_cnpj
+            description: Company root CNPJ.
+          - name: simples_option
+            description: Indicates whether the company has opted into Simples Nacional.
+          - name: simples_option_date
+            description: Simples Nacional option date in the raw source.
+          - name: simples_exclusion_date
+            description: Simples Nacional exclusion date in the raw source.
+          - name: mei_option
+            description: Indicates whether the company has opted into MEI.
+          - name: mei_option_date
+            description: MEI option date in the raw source.
+          - name: mei_exclusion_date
+            description: MEI exclusion date in the raw source.

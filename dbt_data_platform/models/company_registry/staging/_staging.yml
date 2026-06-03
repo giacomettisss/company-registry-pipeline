@@ -13,3 +13,21 @@ models:
         description: CNAE activity description.
         tests:
           - not_null
+
+  - name: stg_company_registry__simples
+    description: Standardized Simples Nacional company registry records.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ standardized to 8 digits.
+        tests:
+          - not_null
+      - name: simples_option
+        description: Indicates whether the company has opted into Simples Nacional.
+        tests:
+          - accepted_values:
+              values: ['S', 'N']
+      - name: mei_option
+        description: Indicates whether the company has opted into MEI.
+        tests:
+          - accepted_values:
+              values: ['S', 'N']

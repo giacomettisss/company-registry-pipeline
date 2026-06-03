@@ -23,3 +23,29 @@ sources:
       columns:
         - cnae_code
         - cnae_description
+
+  - name: simples
+    extractor: http_zip_csv
+    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Simples.zip
+    load:
+      target_table: raw_company_registry_simples
+      # Current implementation: overwrite. Production extension points: append_only, upsert.
+      strategy: overwrite
+      # Required for future upsert strategy.
+      unique_key: []
+      metadata_columns:
+        loaded_at: _loaded_at
+        source_reference_date: _source_reference_date
+        pipeline_run_id: _pipeline_run_id
+    options:
+      delimiter: ";"
+      encoding: latin1
+      has_header: false
+      columns:
+        - company_root_cnpj
+        - simples_option
+        - simples_option_date
+        - simples_exclusion_date
+        - mei_option
+        - mei_option_date
+        - mei_exclusion_date
