@@ -25,6 +25,8 @@ The local execution path is:
 6. dbt builds staging, intermediate, and mart models from those raw tables.
 7. dbt tests validate quality and business rules.
 
+For SCD Type 2 history, snapshots should read a current-state dbt model with a stable unique key. In this project, the share capital snapshot reads the company profile intermediate model instead of raw or staging data. This keeps the snapshot stable if raw loading later moves to append-only ingestion and staging continues to represent standardized source records.
+
 Raw loading is declared per source:
 
 ```yaml

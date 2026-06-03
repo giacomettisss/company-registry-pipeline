@@ -1,0 +1,25 @@
+version: 2
+
+snapshots:
+  - name: snap_company_registry__share_capital
+    description: SCD Type 2 snapshot tracking share capital changes at company root CNPJ grain.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ used as the snapshot unique key.
+        tests:
+          - not_null
+      - name: share_capital
+        description: Share capital value monitored by the snapshot check strategy.
+        tests:
+          - not_null
+      - name: dbt_scd_id
+        description: dbt-generated unique identifier for each historical version.
+        tests:
+          - not_null
+          - unique
+      - name: dbt_valid_from
+        description: Timestamp when the historical version became valid.
+        tests:
+          - not_null
+      - name: dbt_valid_to
+        description: Timestamp when the historical version stopped being valid. Null means the version is current.

@@ -91,6 +91,12 @@ source -> raw -> staging -> intermediate -> marts
 
 Prefect is responsible for moving data from `source` to `raw`. dbt is responsible for everything after `raw`: `staging`, `intermediate`, tests, snapshots, and `marts`.
 
+## Snapshot Strategy
+
+Snapshots should read from a current-state model with a stable grain, not directly from an append-only raw history. The current SCD Type 2 snapshot reads `int_company_registry__company_profile`, which has one row per `company_root_cnpj` and tracks changes in `share_capital`.
+
+In a production raw append-only design, staging should remain close to the raw source while standardizing names, types, and nulls. If staging starts exposing multiple versions per business key, a current-state intermediate model should deduplicate by business key and load metadata before snapshots or marts consume it.
+
 ## Load Strategy Contract
 
 Each source declares how it should be loaded into the raw warehouse layer:
@@ -160,7 +166,7 @@ The repository currently includes a minimal reusable ingestion path validated wi
 - first CNAE staging model with basic dbt tests;
 - minimal unit tests for reusable ingestion components.
 
-Additional staging models, marts, snapshots, macros, and full dbt test coverage will be added in dedicated implementation commits.
+Additional macros and full dbt test coverage will be added in dedicated implementation commits.
 
 ## dbt Seeds
 
