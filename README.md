@@ -207,6 +207,8 @@ def run_flow(
 
 For a step-by-step Windows `cmd.exe` guide, see [Running the First Flow](docs/running_first_flow.md).
 
+For the source-to-raw design, see [Ingestion Architecture](docs/ingestion_architecture.md).
+
 For adding another source to an existing pipeline, see [Adding a New Source](docs/adding_new_source.md).
 
 For adding a dbt staging model after raw ingestion, see [Adding a Staging Model](docs/adding_staging_model.md).

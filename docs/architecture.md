@@ -42,6 +42,8 @@ load:
 
 The local implementation currently executes `overwrite`. The same contract is intended to support `append_only` and `upsert` later, without changing pipeline flow code or shared CLI behavior.
 
+The detailed source-to-raw ingestion design is documented in [Ingestion Architecture](ingestion_architecture.md).
+
 The local CLI resolves pipelines by convention:
 
 ```text
