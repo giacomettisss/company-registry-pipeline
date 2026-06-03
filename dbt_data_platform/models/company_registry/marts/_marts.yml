@@ -31,3 +31,54 @@ models:
           - not_null
       - name: cnae_subclass_label
         description: Human-readable CNAE subclass label.
+
+  - name: dim_companies
+    description: Company dimension at root CNPJ grain with registration attributes and Simples Nacional flags.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: legal_name
+        description: Company legal name.
+        tests:
+          - not_null
+      - name: legal_nature_code
+        description: Legal nature code standardized to four digits.
+        tests:
+          - not_null
+      - name: responsible_qualification_code
+        description: Qualification code of the person responsible for the company.
+      - name: share_capital
+        description: Current company share capital.
+        tests:
+          - not_null
+      - name: share_capital_range
+        description: Analytical range derived from company share capital.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['up_to_10k', '10k_to_100k', '100k_to_1m', 'over_1m']
+      - name: company_size_code
+        description: Company size code from Receita Federal.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['00', '01', '03', '05']
+      - name: company_size_label
+        description: Human-readable label derived from company size code.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['not_informed', 'micro_company', 'small_company', 'other', 'unknown']
+      - name: responsible_federative_entity
+        description: Federative entity responsible for the company, when available.
+      - name: is_simples
+        description: Boolean flag indicating whether the company is currently marked as Simples Nacional in the sample.
+        tests:
+          - not_null
+      - name: is_mei
+        description: Boolean flag indicating whether the company is currently marked as MEI in the sample.
+        tests:
+          - not_null
