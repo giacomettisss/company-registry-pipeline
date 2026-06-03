@@ -3,6 +3,7 @@ from pathlib import Path
 from prefect import flow
 
 from orchestration.core.config import ConfigLoader
+from orchestration.core.source_selection import select_sources
 from orchestration.tasks.ingestion import ingest_source
 
 
@@ -14,13 +15,15 @@ DEFAULT_PLATFORM_CONFIG_PATH = "configs/platforms/local.yml"
 def company_registry_ingestion_flow(
     pipeline_config_path: str,
     platform_config_path: str = DEFAULT_PLATFORM_CONFIG_PATH,
+    source_name: str | None = None,
 ) -> list[dict[str, str | int]]:
     config_loader = ConfigLoader(PROJECT_ROOT)
     platform_config = config_loader.load_platform(platform_config_path)
     pipeline_config = config_loader.load_pipeline(pipeline_config_path)
+    source_configs = select_sources(pipeline_config, source_name)
 
     results = []
-    for source_config in pipeline_config.sources:
+    for source_config in source_configs:
         results.append(
             ingest_source(
                 source_config=source_config,
@@ -35,8 +38,10 @@ def company_registry_ingestion_flow(
 def run_flow(
     pipeline_config_path: str,
     platform_config_path: str = DEFAULT_PLATFORM_CONFIG_PATH,
+    source_name: str | None = None,
 ) -> list[dict[str, str | int]]:
     return company_registry_ingestion_flow(
         pipeline_config_path=pipeline_config_path,
         platform_config_path=platform_config_path,
+        source_name=source_name,
     )

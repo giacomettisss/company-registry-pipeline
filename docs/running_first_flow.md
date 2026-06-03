@@ -35,6 +35,12 @@ set PREFECT_SERVER_ANALYTICS_ENABLED=false
 python -m orchestration.cli run company_registry
 ```
 
+To run only one source from the pipeline:
+
+```cmd
+python -m orchestration.cli run company_registry --source cnaes
+```
+
 The CLI resolves `company_registry` by convention using `configs\pipelines\company_registry.yml` and `pipelines\company_registry\flow.py::run_flow`.
 
 Expected ending:

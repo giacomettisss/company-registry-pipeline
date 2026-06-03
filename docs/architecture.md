@@ -44,6 +44,7 @@ The local CLI resolves pipelines by convention:
 
 ```text
 python -m orchestration.cli run <pipeline_name>
+python -m orchestration.cli run <pipeline_name> --source <source_name>
 
 configs/pipelines/<pipeline_name>.yml
 pipelines/<pipeline_name>/flow.py::run_flow

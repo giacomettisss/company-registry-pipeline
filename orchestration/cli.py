@@ -10,7 +10,7 @@ PIPELINE_FLOW_MODULE_TEMPLATE = "pipelines.{pipeline_name}.flow"
 PIPELINE_RUNNER_FUNCTION = "run_flow"
 VALID_PIPELINE_NAME = re.compile(r"^[a-z][a-z0-9_]*$")
 
-PipelineRunner = Callable[[str, str], list[dict[str, str | int]]]
+PipelineRunner = Callable[[str, str, str | None], list[dict[str, str | int]]]
 
 
 def parse_args() -> Namespace:
@@ -28,11 +28,18 @@ def parse_args() -> Namespace:
         default=DEFAULT_PLATFORM_CONFIG_PATH,
         help="Path to the shared platform YAML configuration.",
     )
+    run_parser.add_argument(
+        "--source",
+        help="Optional source name to run from the pipeline YAML. Defaults to all sources.",
+    )
 
     return parser.parse_args()
 
 
 def run_pipeline(args: Namespace) -> None:
+    if args.source:
+        validate_source_name(args.source)
+
     runner = load_pipeline_runner(args.pipeline_name)
     pipeline_config_path = args.pipeline_config or DEFAULT_PIPELINE_CONFIG_TEMPLATE.format(
         pipeline_name=args.pipeline_name
@@ -41,6 +48,7 @@ def run_pipeline(args: Namespace) -> None:
     runner(
         pipeline_config_path=pipeline_config_path,
         platform_config_path=args.platform_config,
+        source_name=args.source,
     )
 
 
@@ -62,6 +70,14 @@ def validate_pipeline_name(pipeline_name: str) -> None:
     if not VALID_PIPELINE_NAME.match(pipeline_name):
         raise ValueError(
             "Invalid pipeline name. Use lowercase letters, numbers, and underscores only, "
+            "starting with a letter."
+        )
+
+
+def validate_source_name(source_name: str) -> None:
+    if not VALID_PIPELINE_NAME.match(source_name):
+        raise ValueError(
+            "Invalid source name. Use lowercase letters, numbers, and underscores only, "
             "starting with a letter."
         )
 

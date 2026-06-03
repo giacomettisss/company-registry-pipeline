@@ -175,6 +175,12 @@ set PREFECT_SERVER_ANALYTICS_ENABLED=false
 python -m orchestration.cli run company_registry
 ```
 
+Run only one source from the pipeline:
+
+```cmd
+python -m orchestration.cli run company_registry --source cnaes
+```
+
 The CLI resolves pipelines by convention:
 
 ```text
@@ -182,9 +188,22 @@ configs/pipelines/<pipeline_name>.yml
 pipelines/<pipeline_name>/flow.py::run_flow
 ```
 
-Adding a new pipeline should not require editing the CLI. The new pipeline must provide its YAML configuration and expose the standard `run_flow` function in its flow module.
+Adding a new pipeline should not require editing the CLI. The new pipeline must provide its YAML configuration and expose the standard `run_flow` function in its flow module:
+
+```python
+def run_flow(
+    pipeline_config_path: str,
+    platform_config_path: str = "configs/platforms/local.yml",
+    source_name: str | None = None,
+):
+    ...
+```
 
 For a step-by-step Windows `cmd.exe` guide, see [Running the First Flow](docs/running_first_flow.md).
+
+For adding another source to an existing pipeline, see [Adding a New Source](docs/adding_new_source.md).
+
+For adding a dbt staging model after raw ingestion, see [Adding a Staging Model](docs/adding_staging_model.md).
 
 ## Tests
 
