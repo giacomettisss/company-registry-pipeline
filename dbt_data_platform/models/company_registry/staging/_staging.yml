@@ -25,9 +25,38 @@ models:
         description: Indicates whether the company has opted into Simples Nacional.
         tests:
           - accepted_values:
-              values: ['S', 'N']
+              arguments:
+                values: ['S', 'N']
       - name: mei_option
         description: Indicates whether the company has opted into MEI.
         tests:
           - accepted_values:
-              values: ['S', 'N']
+              arguments:
+                values: ['S', 'N']
+
+  - name: stg_company_registry__companies
+    description: Standardized company-level registry records.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ standardized to 8 digits.
+        tests:
+          - not_null
+          - unique
+      - name: legal_name
+        description: Company legal name.
+        tests:
+          - not_null
+      - name: legal_nature_code
+        description: Legal nature code standardized to 4 digits.
+        tests:
+          - not_null
+      - name: share_capital
+        description: Company share capital converted to decimal.
+        tests:
+          - not_null
+      - name: company_size_code
+        description: Company size code standardized to 2 digits.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['00', '01', '03', '05']

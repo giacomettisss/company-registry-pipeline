@@ -49,3 +49,31 @@ sources:
         - mei_option
         - mei_option_date
         - mei_exclusion_date
+
+  - name: companies
+    extractor: http_zip_csv
+    # Local sample uses the first Receita Federal partition. Production ingestion should handle all Empresas*.zip files.
+    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Empresas0.zip
+    load:
+      target_table: raw_company_registry_companies
+      # Current implementation: overwrite. Production extension points: append_only, upsert.
+      strategy: overwrite
+      # Required for future upsert strategy.
+      unique_key:
+        - company_root_cnpj
+      metadata_columns:
+        loaded_at: _loaded_at
+        source_reference_date: _source_reference_date
+        pipeline_run_id: _pipeline_run_id
+    options:
+      delimiter: ";"
+      encoding: latin1
+      has_header: false
+      columns:
+        - company_root_cnpj
+        - legal_name
+        - legal_nature_code
+        - responsible_qualification_code
+        - share_capital
+        - company_size_code
+        - responsible_federative_entity

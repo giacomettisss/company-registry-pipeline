@@ -30,3 +30,21 @@ sources:
             description: MEI option date in the raw source.
           - name: mei_exclusion_date
             description: MEI exclusion date in the raw source.
+
+      - name: raw_company_registry_companies
+        description: Raw company records from the Receita Federal public company registry dataset.
+        columns:
+          - name: company_root_cnpj
+            description: Company root CNPJ.
+          - name: legal_name
+            description: Company legal name.
+          - name: legal_nature_code
+            description: Legal nature code.
+          - name: responsible_qualification_code
+            description: Responsible person qualification code.
+          - name: share_capital
+            description: Company share capital in the raw source format.
+          - name: company_size_code
+            description: Company size code.
+          - name: responsible_federative_entity
+            description: Federative entity responsible for the company, when applicable.
