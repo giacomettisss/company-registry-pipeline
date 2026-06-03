@@ -112,3 +112,29 @@ sources:
             description: Special status, when applicable.
           - name: special_status_date
             description: Special status date in the raw source.
+
+      - name: raw_company_registry_partners
+        description: Raw partner records from the Receita Federal public company registry dataset.
+        columns:
+          - name: company_root_cnpj
+            description: Company root CNPJ.
+          - name: partner_identifier_code
+            description: Partner identifier code.
+          - name: partner_name
+            description: Partner name or legal name.
+          - name: partner_document
+            description: Partner CNPJ or CPF value from the raw source.
+          - name: partner_qualification_code
+            description: Partner qualification code.
+          - name: partnership_start_date
+            description: Partnership start date in the raw source.
+          - name: country_code
+            description: Partner country code, when applicable.
+          - name: legal_representative_document
+            description: Legal representative document.
+          - name: legal_representative_name
+            description: Legal representative name.
+          - name: legal_representative_qualification_code
+            description: Legal representative qualification code.
+          - name: partner_age_range_code
+            description: Partner age range code.

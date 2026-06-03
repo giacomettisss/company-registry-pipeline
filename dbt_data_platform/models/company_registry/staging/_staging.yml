@@ -97,3 +97,28 @@ models:
         description: Primary CNAE code standardized to 7 digits.
         tests:
           - not_null
+
+  - name: stg_company_registry__partners
+    description: Standardized company partner records.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ standardized to 8 digits.
+        tests:
+          - not_null
+      - name: partner_identifier_code
+        description: Partner identifier code, where 1 is legal entity, 2 is individual, and 3 is foreign.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['1', '2', '3']
+      - name: partner_name
+        description: Partner name or legal name, when available in the source.
+      - name: partner_qualification_code
+        description: Partner qualification code standardized to 2 digits.
+        tests:
+          - not_null
+      - name: partnership_start_date
+        description: Date when the partner entered the company.
+      - name: partner_age_range_code
+        description: Partner age range code from the raw source.

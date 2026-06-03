@@ -128,3 +128,34 @@ sources:
         - email
         - special_status
         - special_status_date
+
+  - name: partners
+    extractor: http_zip_csv
+    # Local sample uses one smaller Receita Federal partition. Production ingestion should handle all Socios*.zip files.
+    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Socios1.zip
+    load:
+      target_table: raw_company_registry_partners
+      # Current implementation: overwrite. Production extension points: append_only, upsert.
+      strategy: overwrite
+      # Required for future upsert strategy.
+      unique_key: []
+      metadata_columns:
+        loaded_at: _loaded_at
+        source_reference_date: _source_reference_date
+        pipeline_run_id: _pipeline_run_id
+    options:
+      delimiter: ";"
+      encoding: latin1
+      has_header: false
+      columns:
+        - company_root_cnpj
+        - partner_identifier_code
+        - partner_name
+        - partner_document
+        - partner_qualification_code
+        - partnership_start_date
+        - country_code
+        - legal_representative_document
+        - legal_representative_name
+        - legal_representative_qualification_code
+        - partner_age_range_code
