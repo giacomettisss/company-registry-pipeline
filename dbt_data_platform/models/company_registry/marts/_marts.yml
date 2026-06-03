@@ -82,3 +82,80 @@ models:
         description: Boolean flag indicating whether the company is currently marked as MEI in the sample.
         tests:
           - not_null
+
+  - name: dim_establishments
+    description: Establishment dimension at full CNPJ grain with activity, location, status, and contact attributes.
+    columns:
+      - name: full_cnpj
+        description: Full 14-digit establishment CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: company_root_cnpj
+        description: Company root CNPJ standardized to eight digits.
+        tests:
+          - not_null
+      - name: branch_order
+        description: Branch order standardized to four digits.
+        tests:
+          - not_null
+      - name: branch_type_code
+        description: Branch type code, where 1 is headquarters and 2 is branch.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['1', '2']
+      - name: branch_type_label
+        description: Human-readable label derived from branch type code.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['headquarters', 'branch', 'unknown']
+      - name: is_headquarters
+        description: Boolean flag identifying headquarters.
+        tests:
+          - not_null
+      - name: is_branch
+        description: Boolean flag identifying branch establishments.
+        tests:
+          - not_null
+      - name: registration_status_code
+        description: Registration status code from Receita Federal.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['01', '02', '03', '04', '08']
+      - name: registration_status_label
+        description: Human-readable label derived from registration status code.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['null', 'active', 'suspended', 'unsuitable', 'closed', 'unknown']
+      - name: is_active
+        description: Boolean flag derived from active registration status code.
+        tests:
+          - not_null
+      - name: primary_cnae_code
+        description: Primary CNAE code standardized to seven digits.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_cnaes')
+                field: cnae_code
+      - name: primary_cnae_description
+        description: Primary CNAE description copied from the CNAE dimension.
+        tests:
+          - not_null
+      - name: state
+        description: Brazilian state code, when available.
+      - name: municipality_code
+        description: Municipality code from the source registry.
+      - name: has_phone
+        description: Boolean flag indicating whether at least one phone number is available.
+        tests:
+          - not_null
+      - name: has_email
+        description: Boolean flag indicating whether an email address is available.
+        tests:
+          - not_null
