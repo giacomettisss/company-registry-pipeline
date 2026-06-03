@@ -15,7 +15,7 @@ def ingest_source(
     source = SourceConfig(
         name=source_config.name,
         uri=source_config.uri,
-        target_table=source_config.target_table,
+        target_table=source_config.load.target_table,
         options=source_config.options,
     )
 
@@ -23,10 +23,11 @@ def ingest_source(
     extraction_result = extractor.extract(source, row_limit=sample_row_limit)
 
     loader = DuckDBLoader(platform_config.warehouse_path)
-    load_result = loader.load(extraction_result)
+    load_result = loader.load(extraction_result, strategy=source_config.load.strategy)
 
     return {
         "source_name": source_config.name,
         "target_table": load_result.target_table,
+        "load_strategy": load_result.strategy,
         "row_count": load_result.row_count,
     }

@@ -13,6 +13,7 @@ VALID_IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 @dataclass(frozen=True)
 class LoadResult:
     target_table: str
+    strategy: str
     row_count: int
 
 
@@ -20,7 +21,15 @@ class DuckDBLoader:
     def __init__(self, warehouse_path: Path):
         self.warehouse_path = warehouse_path
 
-    def load(self, result: ExtractionResult) -> LoadResult:
+    def load(self, result: ExtractionResult, strategy: str = "overwrite") -> LoadResult:
+        strategy = self._validate_load_strategy(strategy)
+
+        if strategy == "overwrite":
+            return self._load_overwrite(result, strategy)
+
+        raise NotImplementedError(f"Load strategy is not implemented yet: {strategy}")
+
+    def _load_overwrite(self, result: ExtractionResult, strategy: str) -> LoadResult:
         table_name = self._validate_identifier(result.target_table)
         columns = [self._validate_identifier(column) for column in result.columns]
         self.warehouse_path.parent.mkdir(parents=True, exist_ok=True)
@@ -36,7 +45,16 @@ class DuckDBLoader:
                     result.rows,
                 )
 
-        return LoadResult(target_table=table_name, row_count=result.row_count)
+        return LoadResult(target_table=table_name, strategy=strategy, row_count=result.row_count)
+
+    def _validate_load_strategy(self, strategy: str) -> str:
+        normalized = strategy.replace("-", "_").lower()
+        supported_strategies = {"overwrite", "append_only", "upsert"}
+
+        if normalized not in supported_strategies:
+            raise ValueError(f"Unsupported load strategy: {strategy}")
+
+        return normalized
 
     def _validate_identifier(self, identifier: str) -> str:
         if not VALID_IDENTIFIER.match(identifier):

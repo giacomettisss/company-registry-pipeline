@@ -6,7 +6,16 @@ sources:
   - name: cnaes
     extractor: http_zip_csv
     uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Cnaes.zip
-    target_table: raw_company_registry_cnaes
+    load:
+      target_table: raw_company_registry_cnaes
+      # Current implementation: overwrite. Production extension points: append_only, upsert.
+      strategy: overwrite
+      # Required for future upsert strategy.
+      unique_key: []
+      metadata_columns:
+        loaded_at: _loaded_at
+        source_reference_date: _source_reference_date
+        pipeline_run_id: _pipeline_run_id
     options:
       delimiter: ";"
       encoding: latin1

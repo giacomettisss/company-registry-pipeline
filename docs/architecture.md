@@ -19,11 +19,26 @@ The local execution path is:
 
 1. Prefect reads external sources or APIs using the pipeline configuration.
 2. Reusable extractors read source-specific formats.
-3. Reusable loaders write bounded local samples into raw DuckDB tables.
+3. Reusable loaders write bounded local samples into raw DuckDB tables using the source load strategy contract.
 4. Reusable Prefect tasks compose extraction and loading.
 5. Domain flows orchestrate shared tasks for each pipeline.
 6. dbt builds staging, intermediate, and mart models from those raw tables.
 7. dbt tests validate quality and business rules.
+
+Raw loading is declared per source:
+
+```yaml
+load:
+  target_table: raw_<domain>_<source>
+  strategy: overwrite
+  unique_key: []
+  metadata_columns:
+    loaded_at: _loaded_at
+    source_reference_date: _source_reference_date
+    pipeline_run_id: _pipeline_run_id
+```
+
+The local implementation currently executes `overwrite`. The same contract is intended to support `append_only` and `upsert` later, without changing pipeline flow code or shared CLI behavior.
 
 The local CLI resolves pipelines by convention:
 

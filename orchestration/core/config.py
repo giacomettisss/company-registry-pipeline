@@ -21,11 +21,19 @@ class PlatformConfig:
 
 
 @dataclass(frozen=True)
+class SourceLoadConfig:
+    target_table: str
+    strategy: str
+    unique_key: list[str]
+    metadata_columns: dict[str, str]
+
+
+@dataclass(frozen=True)
 class PipelineSourceConfig:
     name: str
     extractor: str
     uri: str
-    target_table: str
+    load: SourceLoadConfig
     options: dict[str, Any]
 
 
@@ -68,12 +76,38 @@ class ConfigLoader:
                     name=source["name"],
                     extractor=source["extractor"],
                     uri=source["uri"],
-                    target_table=source["target_table"],
+                    load=self._load_source_load_config(source),
                     options=source.get("options", {}),
                 )
                 for source in data["sources"]
             ],
         )
+
+    def _load_source_load_config(self, source: dict[str, Any]) -> SourceLoadConfig:
+        load = source.get("load")
+        if load is None:
+            return SourceLoadConfig(
+                target_table=source["target_table"],
+                strategy="overwrite",
+                unique_key=[],
+                metadata_columns={},
+            )
+
+        return SourceLoadConfig(
+            target_table=load["target_table"],
+            strategy=self._normalize_load_strategy(load.get("strategy", "overwrite")),
+            unique_key=list(load.get("unique_key", [])),
+            metadata_columns=dict(load.get("metadata_columns", {})),
+        )
+
+    def _normalize_load_strategy(self, strategy: str) -> str:
+        normalized = strategy.replace("-", "_").lower()
+        supported_strategies = {"overwrite", "append_only", "upsert"}
+
+        if normalized not in supported_strategies:
+            raise ValueError(f"Unsupported load strategy: {strategy}")
+
+        return normalized
 
     def _load_yaml(self, config_path: str | Path) -> dict[str, Any]:
         path = self._resolve_path(config_path)

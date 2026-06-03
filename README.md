@@ -75,6 +75,45 @@ dbt_data_platform/
   -> transformation and quality layer
 ```
 
+## Data Layers
+
+The pipeline follows a clear layered flow:
+
+```text
+source -> raw -> staging -> intermediate -> marts
+```
+
+- `source`: external systems, files, APIs, or public datasets. This layer is outside our warehouse and is only described by pipeline configuration.
+- `raw`: the first warehouse layer. Data is loaded with minimal changes so we keep a close representation of what arrived from the source.
+- `staging`: dbt models that clean names, cast types, normalize nulls, and expose one reliable model per raw source.
+- `intermediate`: reusable business transformations that combine or enrich staging models before final consumption.
+- `marts`: final analytical models, such as dimensions and fact tables, designed for reporting, metrics, and downstream users.
+
+Prefect is responsible for moving data from `source` to `raw`. dbt is responsible for everything after `raw`: `staging`, `intermediate`, tests, snapshots, and `marts`.
+
+## Load Strategy Contract
+
+Each source declares how it should be loaded into the raw warehouse layer:
+
+```yaml
+load:
+  target_table: raw_company_registry_cnaes
+  strategy: overwrite
+  unique_key: []
+  metadata_columns:
+    loaded_at: _loaded_at
+    source_reference_date: _source_reference_date
+    pipeline_run_id: _pipeline_run_id
+```
+
+The current local implementation supports `overwrite`, which keeps the first end-to-end flow simple. The contract already reserves `append_only` and `upsert` as production-oriented strategies:
+
+- `overwrite`: replaces the raw table for bounded local samples or full-refresh scenarios.
+- `append_only`: appends each ingestion run with load metadata for traceability and historical replay.
+- `upsert`: merges records by `unique_key` when the source exposes stable business keys and updates existing entities.
+
+This keeps the project honest: the current behavior is explicit, and future production behavior can be added behind the same source configuration contract.
+
 ## Development Guidance
 
 The codebase should be simple, modular, and open for extension. A few loose functions are acceptable for small helpers, but reusable concepts should be represented by coherent classes or contracts instead of scattered procedural code.
