@@ -159,3 +159,95 @@ models:
         description: Boolean flag indicating whether an email address is available.
         tests:
           - not_null
+
+  - name: fct_active_companies
+    description: Incremental fact table at active company grain with establishment, partner, and capital metrics.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: representative_full_cnpj
+        description: Representative active establishment CNPJ, preferring headquarters when available.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_establishments')
+                field: full_cnpj
+      - name: primary_cnae_code
+        description: Primary CNAE code from the representative active establishment.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_cnaes')
+                field: cnae_code
+      - name: state
+        description: State from the representative active establishment.
+      - name: municipality_code
+        description: Municipality from the representative active establishment.
+      - name: representative_branch_type_code
+        description: Branch type code from the representative active establishment.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['1', '2']
+      - name: legal_name
+        description: Company legal name, when available in the current sample.
+      - name: legal_nature_code
+        description: Legal nature code, when available in the current sample.
+      - name: company_size_code
+        description: Company size code, when available in the current sample.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['00', '01', '03', '05']
+      - name: is_simples
+        description: Boolean flag indicating whether the company is marked as Simples Nacional in the current sample.
+        tests:
+          - not_null
+      - name: is_mei
+        description: Boolean flag indicating whether the company is marked as MEI in the current sample.
+        tests:
+          - not_null
+      - name: active_company_count
+        description: Additive active company count. Always 1 at this model grain.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [1]
+      - name: active_establishment_count
+        description: Number of active establishments for the company.
+        tests:
+          - not_null
+      - name: active_headquarters_count
+        description: Number of active headquarters for the company.
+        tests:
+          - not_null
+      - name: active_branch_count
+        description: Number of active branch establishments for the company.
+        tests:
+          - not_null
+      - name: share_capital_amount
+        description: Current share capital amount, when available in the current sample.
+        tests:
+          - not_null
+      - name: partner_count
+        description: Number of partners linked to the company in the current sample.
+        tests:
+          - not_null
+      - name: legal_entity_partner_count
+        description: Number of legal entity partners linked to the company in the current sample.
+        tests:
+          - not_null
+      - name: individual_partner_count
+        description: Number of individual partners linked to the company in the current sample.
+        tests:
+          - not_null
+      - name: foreign_partner_count
+        description: Number of foreign partners linked to the company in the current sample.
+        tests:
+          - not_null
