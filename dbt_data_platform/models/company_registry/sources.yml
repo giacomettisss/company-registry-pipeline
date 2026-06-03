@@ -48,3 +48,67 @@ sources:
             description: Company size code.
           - name: responsible_federative_entity
             description: Federative entity responsible for the company, when applicable.
+
+      - name: raw_company_registry_establishments
+        description: Raw establishment records from the Receita Federal public company registry dataset.
+        columns:
+          - name: company_root_cnpj
+            description: Company root CNPJ.
+          - name: branch_order
+            description: Branch order number.
+          - name: check_digits
+            description: CNPJ check digits.
+          - name: branch_type_code
+            description: Branch type code, identifying headquarters or branch.
+          - name: trade_name
+            description: Establishment trade name.
+          - name: registration_status_code
+            description: Establishment registration status code.
+          - name: registration_status_date
+            description: Registration status date in the raw source.
+          - name: registration_status_reason_code
+            description: Registration status reason code.
+          - name: foreign_city_name
+            description: Foreign city name, when applicable.
+          - name: country_code
+            description: Country code, when applicable.
+          - name: activity_start_date
+            description: Establishment activity start date in the raw source.
+          - name: primary_cnae_code
+            description: Primary CNAE activity code.
+          - name: secondary_cnae_codes
+            description: Secondary CNAE activity codes.
+          - name: street_type
+            description: Address street type.
+          - name: street_name
+            description: Address street name.
+          - name: address_number
+            description: Address number.
+          - name: address_complement
+            description: Address complement.
+          - name: district
+            description: Address district.
+          - name: postal_code
+            description: Postal code.
+          - name: state
+            description: Brazilian state abbreviation.
+          - name: municipality_code
+            description: Municipality code.
+          - name: area_code_1
+            description: Primary phone area code.
+          - name: phone_1
+            description: Primary phone number.
+          - name: area_code_2
+            description: Secondary phone area code.
+          - name: phone_2
+            description: Secondary phone number.
+          - name: fax_area_code
+            description: Fax area code.
+          - name: fax_number
+            description: Fax number.
+          - name: email
+            description: Establishment email address.
+          - name: special_status
+            description: Special status, when applicable.
+          - name: special_status_date
+            description: Special status date in the raw source.

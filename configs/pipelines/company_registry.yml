@@ -77,3 +77,54 @@ sources:
         - share_capital
         - company_size_code
         - responsible_federative_entity
+
+  - name: establishments
+    extractor: http_zip_csv
+    # Local sample uses one smaller Receita Federal partition. Production ingestion should handle all Estabelecimentos*.zip files.
+    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Estabelecimentos1.zip
+    load:
+      target_table: raw_company_registry_establishments
+      # Current implementation: overwrite. Production extension points: append_only, upsert.
+      strategy: overwrite
+      # Required for future upsert strategy.
+      unique_key:
+        - full_cnpj
+      metadata_columns:
+        loaded_at: _loaded_at
+        source_reference_date: _source_reference_date
+        pipeline_run_id: _pipeline_run_id
+    options:
+      delimiter: ";"
+      encoding: latin1
+      has_header: false
+      columns:
+        - company_root_cnpj
+        - branch_order
+        - check_digits
+        - branch_type_code
+        - trade_name
+        - registration_status_code
+        - registration_status_date
+        - registration_status_reason_code
+        - foreign_city_name
+        - country_code
+        - activity_start_date
+        - primary_cnae_code
+        - secondary_cnae_codes
+        - street_type
+        - street_name
+        - address_number
+        - address_complement
+        - district
+        - postal_code
+        - state
+        - municipality_code
+        - area_code_1
+        - phone_1
+        - area_code_2
+        - phone_2
+        - fax_area_code
+        - fax_number
+        - email
+        - special_status
+        - special_status_date

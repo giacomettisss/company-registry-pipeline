@@ -60,3 +60,40 @@ models:
           - accepted_values:
               arguments:
                 values: ['00', '01', '03', '05']
+
+  - name: stg_company_registry__establishments
+    description: Standardized establishment-level company registry records.
+    columns:
+      - name: full_cnpj
+        description: Full 14-digit establishment CNPJ.
+        tests:
+          - not_null
+          - unique
+      - name: company_root_cnpj
+        description: Company root CNPJ standardized to 8 digits.
+        tests:
+          - not_null
+      - name: branch_order
+        description: Branch order standardized to 4 digits.
+        tests:
+          - not_null
+      - name: check_digits
+        description: CNPJ check digits standardized to 2 digits.
+        tests:
+          - not_null
+      - name: branch_type_code
+        description: Branch type code, where 1 is headquarters and 2 is branch.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['1', '2']
+      - name: registration_status_code
+        description: Registration status code standardized to 2 digits.
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['01', '02', '03', '04', '08']
+      - name: primary_cnae_code
+        description: Primary CNAE code standardized to 7 digits.
+        tests:
+          - not_null
