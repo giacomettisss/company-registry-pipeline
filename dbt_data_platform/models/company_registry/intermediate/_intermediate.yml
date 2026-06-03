@@ -1,0 +1,90 @@
+version: 2
+
+models:
+  - name: int_company_registry__company_profile
+    description: Company-level reusable profile combining company attributes with Simples Nacional information.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: legal_name
+        description: Company legal name.
+      - name: share_capital
+        description: Current company share capital.
+      - name: is_simples
+        description: Boolean flag indicating Simples Nacional option.
+      - name: is_mei
+        description: Boolean flag indicating MEI option.
+
+  - name: int_company_registry__establishment_activity
+    description: Establishment-level reusable activity model with status, location, CNAE, and branch flags.
+    columns:
+      - name: full_cnpj
+        description: Full 14-digit establishment CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: company_root_cnpj
+        description: Company root CNPJ.
+        tests:
+          - not_null
+      - name: primary_cnae_code
+        description: Primary CNAE code standardized to 7 digits.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_company_registry__cnaes')
+                field: cnae_code
+      - name: is_active
+        description: Boolean flag derived from the Receita Federal active registration status code.
+      - name: is_headquarters
+        description: Boolean flag identifying headquarters.
+
+  - name: int_company_registry__partner_metrics
+    description: Company-level partner metrics aggregated from partner records.
+    columns:
+      - name: company_root_cnpj
+        description: Company root CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: partner_count
+        description: Total number of partners found for the company.
+        tests:
+          - not_null
+      - name: legal_entity_partner_count
+        description: Number of legal entity partners.
+      - name: individual_partner_count
+        description: Number of individual partners.
+      - name: foreign_partner_count
+        description: Number of foreign partners.
+
+  - name: int_company_registry__active_company_base
+    description: Active establishment-level base model combining company, establishment, Simples Nacional, and partner metrics.
+    columns:
+      - name: full_cnpj
+        description: Full 14-digit establishment CNPJ. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: company_root_cnpj
+        description: Company root CNPJ.
+        tests:
+          - not_null
+      - name: primary_cnae_code
+        description: Primary CNAE code for the active establishment.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_company_registry__cnaes')
+                field: cnae_code
+      - name: is_active
+        description: Always true for rows in this active base model.
+      - name: partner_count
+        description: Partner count copied from company-level partner metrics.
+        tests:
+          - not_null

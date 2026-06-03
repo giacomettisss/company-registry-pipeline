@@ -25,6 +25,8 @@ models:
     company_registry:
       staging:
         +materialized: view
+      intermediate:
+        +materialized: table
 
 snapshots:
   data_platform: {}

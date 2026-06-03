@@ -52,8 +52,8 @@ sources:
 
   - name: companies
     extractor: http_zip_csv
-    # Local sample uses the first Receita Federal partition. Production ingestion should handle all Empresas*.zip files.
-    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Empresas0.zip
+    # Local sample uses one smaller Receita Federal partition. Production ingestion should handle all Empresas*.zip files.
+    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Empresas1.zip
     load:
       target_table: raw_company_registry_companies
       # Current implementation: overwrite. Production extension points: append_only, upsert.
