@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: company_registry_raw
+    schema: main
+    description: Raw company registry tables loaded into DuckDB by Prefect ingestion flows.
+    tables:
+      - name: raw_company_registry_cnaes
+        description: Raw CNAE records from the Receita Federal public company registry dataset.
+        columns:
+          - name: cnae_code
+            description: Raw CNAE activity code.
+          - name: cnae_description
+            description: Raw CNAE activity description.

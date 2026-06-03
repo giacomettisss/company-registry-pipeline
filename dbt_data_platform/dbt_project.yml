@@ -21,7 +21,10 @@ clean-targets:
   - dbt_packages
 
 models:
-  data_platform: {}
+  data_platform:
+    company_registry:
+      staging:
+        +materialized: view
 
 snapshots:
   data_platform: {}

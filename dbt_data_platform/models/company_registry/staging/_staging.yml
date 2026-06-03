@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: stg_company_registry__cnaes
+    description: Standardized CNAE reference data used to classify company economic activities.
+    columns:
+      - name: cnae_code
+        description: Seven-digit CNAE activity code.
+        tests:
+          - not_null
+          - unique
+      - name: cnae_description
+        description: CNAE activity description.
+        tests:
+          - not_null

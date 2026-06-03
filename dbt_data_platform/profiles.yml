@@ -1,0 +1,8 @@
+data_platform:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: data/warehouse/data_platform.duckdb
+      schema: main
+      threads: 4
