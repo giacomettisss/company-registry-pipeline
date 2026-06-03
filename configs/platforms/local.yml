@@ -1,0 +1,11 @@
+environment: local
+
+warehouse:
+  type: duckdb
+  path: data/warehouse/data_platform.duckdb
+
+transformation:
+  type: dbt
+  target: local
+  project_dir: dbt_data_platform
+  profiles_dir: dbt_data_platform

@@ -11,6 +11,7 @@ data/warehouse/*
 dbt_data_platform/logs/
 dbt_data_platform/target/
 dbt_data_platform/dbt_packages/
+dbt_data_platform/.user.yml
 *.duckdb
 *.duckdb.wal
 

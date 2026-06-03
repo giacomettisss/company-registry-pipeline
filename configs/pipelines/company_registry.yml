@@ -1,0 +1,16 @@
+pipeline:
+  name: company_registry
+  sample_row_limit: 10000
+
+sources:
+  - name: cnaes
+    extractor: http_zip_csv
+    uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Cnaes.zip
+    target_table: raw_company_registry_cnaes
+    options:
+      delimiter: ";"
+      encoding: latin1
+      has_header: false
+      columns:
+        - cnae_code
+        - cnae_description
