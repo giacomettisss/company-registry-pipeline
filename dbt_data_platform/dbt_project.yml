@@ -27,6 +27,8 @@ models:
         +materialized: view
       intermediate:
         +materialized: table
+      marts:
+        +materialized: table
 
 snapshots:
   data_platform: {}

@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: dim_cnaes
+    description: CNAE dimension with derived hierarchy codes for analytical grouping.
+    columns:
+      - name: cnae_code
+        description: Seven-digit CNAE subclass code. This is the model grain.
+        tests:
+          - not_null
+          - unique
+      - name: cnae_description
+        description: CNAE subclass description.
+        tests:
+          - not_null
+      - name: cnae_division_code
+        description: First two digits of the CNAE code.
+        tests:
+          - not_null
+      - name: cnae_group_code
+        description: First three digits of the CNAE code.
+        tests:
+          - not_null
+      - name: cnae_class_code
+        description: First five digits of the CNAE code.
+        tests:
+          - not_null
+      - name: cnae_subclass_code
+        description: Full seven-digit CNAE subclass code.
+        tests:
+          - not_null
+      - name: cnae_subclass_label
+        description: Human-readable CNAE subclass label.
