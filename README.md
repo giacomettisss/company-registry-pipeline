@@ -99,6 +99,7 @@ The CLI makes the common workflow easy:
 - run a single source with `--source` for a fast development loop;
 - avoid memorizing module paths, Prefect internals, or loader implementation details;
 - keep the same command shape as new pipelines are added.
+- read source-level ingestion logs that show the extractor, target table, load strategy, row limit, and loaded row count.
 
 The YAML file acts as a readable contract. It says what should be ingested: source name, URI, extractor key, parsing options, target raw table, and load strategy. It does not force the pipeline user to know how HTTP downloads, ZIP parsing, CSV normalization, or DuckDB writes are implemented.
 
@@ -125,6 +126,7 @@ The implementation follows practical software engineering principles:
 - extractors follow the `BaseExtractor` contract;
 - loading is isolated in loader classes such as `DuckDBLoader`;
 - reusable Prefect tasks keep domain flows thin;
+- source-level logging stays centralized in the reusable ingestion task;
 - dbt owns transformation, tests, snapshots, and marts.
 
 This keeps the code aligned with single responsibility and open/closed principles:
@@ -136,6 +138,19 @@ This keeps the code aligned with single responsibility and open/closed principle
 - shared tasks and CLI code remain stable unless there is a real reusable platform need.
 
 The goal is clean code without overengineering: focused contracts, coherent classes, strategy-style implementations, factories only where configuration needs to select behavior, and reusable tasks where Prefect orchestration would otherwise be repeated.
+
+## Code Documentation
+
+The codebase uses pragmatic Python docstrings on public contracts, classes, and functions. The goal is not to document obvious implementation details, but to make extension points easier to understand for developers working on the platform.
+
+Docstrings should explain:
+
+- what role a class or function plays in the pipeline platform;
+- which contract an implementation follows;
+- what a reusable component returns or coordinates;
+- why a helper exists when the behavior is not obvious from the name alone.
+
+Docstrings should stay concise. Clear names and cohesive functions remain the primary form of code clarity, while docstrings provide enough context for onboarding, IDE hints, and future generated documentation with tools such as Sphinx or pdoc.
 
 ## Data Layers
 

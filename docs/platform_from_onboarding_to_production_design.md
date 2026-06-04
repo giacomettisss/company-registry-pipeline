@@ -65,6 +65,8 @@ The internal architecture follows clean code principles in a pragmatic way:
 
 This design applies single responsibility and open/closed principles without turning the challenge into a large framework. A new source format should be added by implementing a focused class. A new warehouse should be added behind a loader implementation. A new pipeline should follow the folder and entrypoint convention instead of requiring edits to shared CLI code.
 
+The codebase also uses pragmatic Python docstrings on public contracts, classes, and functions. They are intentionally concise: they describe the role of an extension point, the contract an implementation follows, or the responsibility of a reusable component. This improves the platform engineer experience today through IDE hints and faster onboarding, and it keeps the project ready for future generated documentation with tools such as Sphinx or pdoc.
+
 The result is a more scalable platform foundation: easy enough to deliver and validate in a short challenge, but structured enough that another engineer could continue extending it without rewriting the foundation.
 
 The project follows this data flow:
@@ -222,7 +224,7 @@ For production BigQuery, the loader should evolve into a concrete `BigQueryLoade
 
 Raw append-only is the preferred default for large production datasets because it preserves lineage and replay capability. The current local `overwrite` implementation is acceptable for a bounded technical challenge sample.
 
-The reusable Prefect task is the bridge between usability and maintainability. It converts YAML source declarations into extractor and loader calls, so ETL developers get an intuitive declaration model and platform engineers keep ingestion behavior centralized in one reusable task. Domain flows stay readable and new sources reuse the same task instead of copying ingestion logic.
+The reusable Prefect task is the bridge between usability and maintainability. It converts YAML source declarations into extractor and loader calls, so ETL developers get an intuitive declaration model and platform engineers keep ingestion behavior centralized in one reusable task. The same task also emits source-level logs for extractor selection, row limits, target tables, load strategies, loaded rows, and failures. This improves the ETL developer run experience and gives platform engineers one reusable observability point for every pipeline. For transformations, dbt already provides useful logs and artifacts for model execution, tests, snapshots, runtime, and failures. Future production evolution can add standardized platform logs around dbt orchestration, source freshness, row-count checks, runtime metrics, and failure summaries. Domain flows stay readable and new sources reuse the same task instead of copying ingestion logic or observability code.
 
 ## 5. dbt Modeling Design
 

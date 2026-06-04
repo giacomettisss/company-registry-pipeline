@@ -188,6 +188,27 @@ The shared Prefect task `ingest_source` coordinates the reusable pieces:
 
 Domain flows do not implement extraction or loading details. They select sources and call the shared ingestion task.
 
+## Observability
+
+The platform currently has two observability layers:
+
+- source-to-raw ingestion logs emitted by our reusable Prefect task;
+- dbt execution logs emitted by `dbt run`, `dbt test`, and `dbt snapshot`.
+
+For ingestion, the shared `ingest_source` task emits source-level logs for the main operational events:
+
+- ingestion start, including source, extractor, target table, load strategy, and row limit;
+- extractor resolution, including the concrete extractor class;
+- extraction completion, including row and column counts;
+- load completion, including target table, strategy, and loaded rows;
+- ingestion failure, including the source and target table context before the exception is propagated.
+
+These logs support the two experience goals of the platform. ETL developers get a clearer run experience when validating sources, because the logs show what source ran, where it loaded, and how many rows arrived. Platform engineers get one centralized logging point that benefits every current and future pipeline without duplicating observability code in each domain flow.
+
+For transformations, dbt already provides useful logs and artifacts for the current scope: model execution status, test results, snapshot execution, SQL failures, runtime, and generated artifacts such as `target/run_results.json` and `target/manifest.json`.
+
+Future production evolution can standardize additional platform logs around dbt orchestration, source freshness, row-count checks, runtime metrics, and failure summaries.
+
 ## Extensibility Rules
 
 Use the smallest abstraction that protects the current design from repetition.
