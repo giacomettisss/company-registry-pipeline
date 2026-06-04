@@ -547,6 +547,7 @@ The local implementation intentionally keeps the challenge scope bounded. Before
 - chunked extraction so large files are not kept fully in memory;
 - append-only raw loading with metadata;
 - upsert support for sources with reliable keys;
+- optional ReceitaWS API enrichment through an `ApiJsonExtractor` when CNPJ-level API attributes become required;
 - source freshness checks;
 - dbt BigQuery profiles for dev and prod;
 - Prefect deployments and workers;

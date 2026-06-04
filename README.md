@@ -250,6 +250,8 @@ The repository currently includes an end-to-end local company registry pipeline:
 - standard dbt tests and one custom business rule test;
 - focused unit tests for reusable ingestion components.
 
+The local E2E implementation focuses on the public Receita Federal ZIP/CSV files needed for the requested company registry modeling. The ReceitaWS API is treated as a future enrichment source that can be added through the same extractor contract, for example with an `ApiJsonExtractor`, without changing the shared CLI or domain flow pattern.
+
 ## dbt Seeds
 
 Seeds are not used in the current scope because source and reference data are loaded by pipeline extraction tasks. The project can add `seeds/` later if a domain needs compact, manual, versioned CSV lookup tables.
