@@ -39,7 +39,7 @@ Shared platform settings are defined in environment-specific files under `config
 
 ## Architecture
 
-The project should use small, coherent modules with explicit contracts. Pipeline-specific code should describe what needs to run, while shared orchestration code should handle reusable execution concepts.
+The project should use focused, coherent modules with explicit contracts. Pipeline-specific code should describe what needs to run, while shared orchestration code should handle reusable execution concepts.
 
 Preferred patterns:
 
@@ -74,6 +74,68 @@ pipelines/<domain>/
 dbt_data_platform/
   -> transformation and quality layer
 ```
+
+## Product And Engineering Experience
+
+This project is not only a working company registry pipeline. It is a scalable pipeline platform foundation designed around two explicit experience goals:
+
+- make pipeline usage intuitive and easier to operate for the ETL developer who needs to run, validate, and add data sources;
+- make platform evolution clean for the engineer who needs to add new extractors, loaders, orchestration behavior, or future pipelines.
+
+That separation matters because a data platform has two audiences. The pipeline user should not need to understand internal Python classes to run a source. The platform engineer should not need to copy and paste flow logic every time the business adds another dataset.
+
+### ETL Developer Experience
+
+The ETL developer interacts with a streamlined, stable surface area: the CLI, pipeline YAML, and dbt models.
+
+```cmd
+python -m orchestration.cli run company_registry
+python -m orchestration.cli run company_registry --source cnaes
+```
+
+The CLI makes the common workflow easy:
+
+- run a full pipeline by name;
+- run a single source with `--source` for a fast development loop;
+- avoid memorizing module paths, Prefect internals, or loader implementation details;
+- keep the same command shape as new pipelines are added.
+
+The YAML file acts as a readable contract. It says what should be ingested: source name, URI, extractor key, parsing options, target raw table, and load strategy. It does not force the pipeline user to know how HTTP downloads, ZIP parsing, CSV normalization, or DuckDB writes are implemented.
+
+In practice, adding another source to an existing pipeline should feel like this:
+
+```text
+declare source in YAML
+  -> run only that source with the CLI
+  -> inspect the raw table
+  -> add or adjust the dbt staging model
+  -> run dbt tests
+```
+
+This is the usability side of the design. The project should be easier to operate, easier to demonstrate, and easier to onboard because the user-facing workflow is intentionally streamlined.
+
+### Platform Engineer Experience
+
+The platform engineer works with explicit extension points instead of scattered procedural code.
+
+The implementation follows practical software engineering principles:
+
+- source behavior is declared in YAML;
+- extractor selection is handled by `ExtractorFactory`;
+- extractors follow the `BaseExtractor` contract;
+- loading is isolated in loader classes such as `DuckDBLoader`;
+- reusable Prefect tasks keep domain flows thin;
+- dbt owns transformation, tests, snapshots, and marts.
+
+This keeps the code aligned with single responsibility and open/closed principles:
+
+- adding a source usually changes configuration and dbt models, not shared orchestration internals;
+- adding a source format means creating a focused extractor class behind the existing contract;
+- adding a warehouse later should mean adding a loader implementation behind the same load contract;
+- adding a pipeline means adding a config and a flow module that follow the convention;
+- shared tasks and CLI code remain stable unless there is a real reusable platform need.
+
+The goal is clean code without overengineering: focused contracts, coherent classes, strategy-style implementations, factories only where configuration needs to select behavior, and reusable tasks where Prefect orchestration would otherwise be repeated.
 
 ## Data Layers
 
@@ -112,7 +174,7 @@ load:
     pipeline_run_id: _pipeline_run_id
 ```
 
-The current local implementation supports `overwrite`, which keeps the first end-to-end flow simple. The contract already reserves `append_only` and `upsert` as production-oriented strategies:
+The current local implementation supports `overwrite`, which keeps the first end-to-end flow easy to validate. The contract already reserves `append_only` and `upsert` as production-oriented strategies:
 
 - `overwrite`: replaces the raw table for bounded local samples or full-refresh scenarios.
 - `append_only`: appends each ingestion run with load metadata for traceability and historical replay.
@@ -122,9 +184,9 @@ This keeps the project honest: the current behavior is explicit, and future prod
 
 ## Development Guidance
 
-The codebase should be simple, modular, and open for extension. A few loose functions are acceptable for small helpers, but reusable concepts should be represented by coherent classes or contracts instead of scattered procedural code.
+The codebase should be clear, modular, and open for extension. A few loose functions are acceptable for narrow helpers, but reusable concepts should be represented by coherent classes or contracts instead of scattered procedural code.
 
-Good abstractions for this project are intentionally small:
+Good abstractions for this project are intentionally focused:
 
 - one base contract;
 - a few interchangeable implementations;
@@ -152,29 +214,33 @@ In this design, `raw` is a warehouse layer, not a local file folder. The sample 
 
 ## Current Scope
 
-The repository currently includes a minimal reusable ingestion path validated with the company registry CNAE source:
+The repository currently includes an end-to-end local company registry pipeline:
 
-- local platform config;
-- company registry pipeline config with one CNAE source;
+- local platform configuration;
+- company registry pipeline configuration for CNAEs, companies, establishments, partners, and Simples Nacional;
 - HTTP ZIP CSV extractor;
 - DuckDB raw table loader;
 - shared Prefect ingestion task;
 - domain flow composition;
 - generic local CLI resolved by convention;
 - local dbt DuckDB profile;
-- dbt source declaration for the raw CNAE table;
-- first CNAE staging model with basic dbt tests;
-- minimal unit tests for reusable ingestion components.
-
-Additional macros and full dbt test coverage will be added in dedicated implementation commits.
+- dbt sources for raw company registry tables;
+- staging models for every ingested source;
+- intermediate models for company profile, establishment activity, partner metrics, and active company base;
+- mart models with company, establishment, and CNAE dimensions;
+- incremental active companies fact table;
+- SCD Type 2 snapshot for share capital;
+- reusable dbt standardization macros;
+- standard dbt tests and one custom business rule test;
+- focused unit tests for reusable ingestion components.
 
 ## dbt Seeds
 
-Seeds are not used in the current scope because source and reference data are loaded by pipeline extraction tasks. The project can add `seeds/` later if a domain needs small, manual, versioned CSV lookup tables.
+Seeds are not used in the current scope because source and reference data are loaded by pipeline extraction tasks. The project can add `seeds/` later if a domain needs compact, manual, versioned CSV lookup tables.
 
 ## Local CLI
 
-The project includes a simple local CLI entrypoint for running the current company registry flow without requiring Prefect deployments or workers.
+The project includes a straightforward local CLI entrypoint for running the current company registry flow without requiring Prefect deployments or workers.
 
 ```cmd
 set PREFECT_SERVER_ANALYTICS_ENABLED=false
@@ -187,14 +253,21 @@ Run only one source from the pipeline:
 python -m orchestration.cli run company_registry --source cnaes
 ```
 
-The CLI resolves pipelines by convention:
+The CLI is intentionally convention-based so the user can run a pipeline by name instead of memorizing module paths or editing a central registry:
 
 ```text
 configs/pipelines/<pipeline_name>.yml
 pipelines/<pipeline_name>/flow.py::run_flow
 ```
 
-Adding a new pipeline should not require editing the CLI. The new pipeline must provide its YAML configuration and expose the standard `run_flow` function in its flow module:
+This improves usability and extensibility at the same time:
+
+- the user gets one stable command for every pipeline;
+- a new source can be tested with `--source`;
+- a new pipeline does not require changing shared CLI code;
+- the code remains open for extension through naming conventions and standard entrypoints.
+
+Adding a new pipeline must provide its YAML configuration and expose the standard `run_flow` function in its flow module:
 
 ```python
 def run_flow(
@@ -209,6 +282,8 @@ For a step-by-step Windows `cmd.exe` guide, see [Running the First Flow](docs/ru
 
 For the source-to-raw design, see [Ingestion Architecture](docs/ingestion_architecture.md).
 
+For project onboarding, production design, and BigQuery FinOps strategy, see [Platform From Onboarding To Production Design](docs/platform_from_onboarding_to_production_design.md).
+
 For adding another source to an existing pipeline, see [Adding a New Source](docs/adding_new_source.md).
 
 For adding a dbt staging model after raw ingestion, see [Adding a Staging Model](docs/adding_staging_model.md).
@@ -219,12 +294,32 @@ Install development dependencies and run the focused unit test suite:
 
 ```cmd
 pip install -r requirements-dev.txt
-pytest tests
+python -m pytest tests
 ```
 
-Run the first dbt staging model and its tests:
+Run the full dbt transformation and quality suite:
 
 ```cmd
-dbt run --project-dir dbt_data_platform --profiles-dir dbt_data_platform --select stg_company_registry__cnaes
-dbt test --project-dir dbt_data_platform --profiles-dir dbt_data_platform --select stg_company_registry__cnaes
+dbt deps --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+dbt run --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+dbt snapshot --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+dbt test --project-dir dbt_data_platform --profiles-dir dbt_data_platform
 ```
+
+`dbt deps` is kept in the validation flow even though the current project does not require external dbt packages.
+
+## End-to-End Local Validation
+
+Run the complete local validation from the project root:
+
+```cmd
+set PREFECT_SERVER_ANALYTICS_ENABLED=false
+python -m orchestration.cli run company_registry
+dbt deps --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+dbt run --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+dbt snapshot --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+dbt test --project-dir dbt_data_platform --profiles-dir dbt_data_platform
+python -m pytest tests
+```
+
+This validates source-to-raw ingestion, dbt transformations, the SCD Type 2 snapshot, dbt data tests, the custom business rule test, and focused Python unit tests.

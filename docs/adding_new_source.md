@@ -88,7 +88,7 @@ The flow then ingests every source declared in the YAML.
 
 ## 4. Validate The Raw Table
 
-Open the DuckDB file with a database client such as DBeaver or VS Code:
+Open the DuckDB file with a database client such as DBeaver or another DuckDB-capable connector. VS Code requires a database extension with DuckDB support; opening the `.duckdb` file directly as a regular file is not expected to work.
 
 ```text
 data/warehouse/data_platform.duckdb
@@ -104,10 +104,10 @@ from raw_company_registry_simples
 limit 10;
 ```
 
-If a database client is not available, use the project fallback:
+If a database client and the standalone DuckDB CLI are not available, use a Python fallback for quick validation:
 
 ```cmd
-.\.venv\Scripts\python.exe -m duckdb data\warehouse\data_platform.duckdb
+python -c "import duckdb; con=duckdb.connect('data/warehouse/data_platform.duckdb'); print(con.execute('select count(*) from raw_company_registry_simples').fetchone()[0])"
 ```
 
 ## 5. When To Create A New Flow

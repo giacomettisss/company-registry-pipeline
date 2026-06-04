@@ -69,13 +69,13 @@ with source as (
 
 standardized as (
     select
-        lpad(trim(cast(company_root_cnpj as varchar)), 8, '0') as company_root_cnpj,
-        nullif(trim(cast(simples_option as varchar)), '') as simples_option,
-        nullif(trim(cast(simples_option_date as varchar)), '') as simples_option_date,
-        nullif(trim(cast(simples_exclusion_date as varchar)), '') as simples_exclusion_date,
-        nullif(trim(cast(mei_option as varchar)), '') as mei_option,
-        nullif(trim(cast(mei_option_date as varchar)), '') as mei_option_date,
-        nullif(trim(cast(mei_exclusion_date as varchar)), '') as mei_exclusion_date
+        {{ standardize_code('company_root_cnpj', 8) }} as company_root_cnpj,
+        {{ clean_text('simples_option') }} as simples_option,
+        {{ parse_yyyymmdd_date('simples_option_date') }} as simples_option_date,
+        {{ parse_yyyymmdd_date('simples_exclusion_date') }} as simples_exclusion_date,
+        {{ clean_text('mei_option') }} as mei_option,
+        {{ parse_yyyymmdd_date('mei_option_date') }} as mei_option_date,
+        {{ parse_yyyymmdd_date('mei_exclusion_date') }} as mei_exclusion_date
     from source
 )
 
@@ -92,6 +92,13 @@ where company_root_cnpj is not null
 ```
 
 Keep staging focused on basic standardization only: names, trimming, null handling, light type normalization, and stable keys. Business rules should move to intermediate or mart models.
+
+Prefer the shared standardization macros in `dbt_data_platform/macros/shared/standardization.sql` when they match the transformation:
+
+- `clean_text`
+- `standardize_code`
+- `parse_yyyymmdd_date`
+- `yes_no_to_boolean`
 
 ## 3. Document And Test The Staging Model
 
@@ -115,12 +122,14 @@ Add:
         description: Indicates whether the company has opted into Simples Nacional.
         tests:
           - accepted_values:
-              values: ['S', 'N']
+              arguments:
+                values: ['S', 'N']
       - name: mei_option
         description: Indicates whether the company has opted into MEI.
         tests:
           - accepted_values:
-              values: ['S', 'N']
+              arguments:
+                values: ['S', 'N']
 ```
 
 Adjust accepted values if the raw dataset uses different codes.

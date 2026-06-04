@@ -2,7 +2,7 @@
 
 This document explains how the project moves external source data into the raw warehouse layer.
 
-The ingestion layer is intentionally small. It uses explicit contracts where the project already has interchangeable behavior, and keeps concrete implementations where only one implementation exists today.
+The ingestion layer is intentionally focused. It uses explicit contracts where the project already has interchangeable behavior, and keeps concrete implementations where only one implementation exists today.
 
 ## Flow
 
@@ -35,7 +35,7 @@ Example:
 ```yaml
 - name: cnaes
   extractor: http_zip_csv
-  uri: https://example.com/Cnaes.zip
+  uri: https://dados-abertos-rf-cnpj.casadosdados.com.br/arquivos/2026-05-10/Cnaes.zip
   load:
     target_table: raw_company_registry_cnaes
     strategy: overwrite
@@ -209,4 +209,3 @@ The local implementation is optimized for a bounded challenge run. Production ev
 - warehouse-specific loaders for cloud execution;
 - current-state intermediate models before snapshots and marts;
 - orchestration deployments and workers per environment.
-

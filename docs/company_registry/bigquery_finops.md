@@ -1,14 +1,5 @@
 # BigQuery FinOps - Company Registry
 
-This document will describe the proposed BigQuery implementation for the company registry pipeline.
+The final onboarding, production design, and BigQuery FinOps document is available at [Platform From Onboarding To Production Design](../platform_from_onboarding_to_production_design.md).
 
-Topics to cover:
-
-- Dataset and table layout.
-- Partitioning strategy.
-- Clustering strategy.
-- Cost and performance trade-offs.
-- Expected query patterns.
-- Onboarding notes for new contributors.
-
-The final version should have 4 to 7 pages as requested by the technical challenge.
+That document covers the company registry model, local onboarding, cloud target architecture, partitioning, clustering, cost and performance trade-offs, expected query patterns, and production guardrails.

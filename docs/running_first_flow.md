@@ -49,7 +49,7 @@ Expected ending:
 Finished in state Completed()
 ```
 
-This command is the local development entrypoint. In a production-style Prefect setup, the flow would be registered as a deployment and executed by a worker from a work pool. Local deployment and worker instructions are tracked as an optional enhancement after the end-to-end pipeline is complete.
+This command is the local development entrypoint. In a production-style Prefect setup, the flow would be registered as a deployment and executed by a worker from a work pool. Local deployment and worker instructions are tracked as an optional enhancement.
 
 ## 4. Open the DuckDB Database
 
@@ -63,7 +63,7 @@ The database file is created at:
 
 Recommended options to inspect it:
 
-- Database client: use DBeaver, VS Code, or another database connector with DuckDB support. Connect to `.\data\warehouse\data_platform.duckdb`.
+- Database client: use DBeaver or another database connector with DuckDB support. VS Code only works for this if it has a DuckDB-capable database extension configured. Connect to `.\data\warehouse\data_platform.duckdb`; do not open the `.duckdb` file directly as a regular file.
 - DuckDB CLI fallback: install the standalone DuckDB CLI and open the file with `duckdb data\warehouse\data_platform.duckdb`.
 - Python fallback: use the inline Python commands below only when a database UI and DuckDB CLI are not available.
 
