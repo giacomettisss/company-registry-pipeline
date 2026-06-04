@@ -5,6 +5,12 @@ def select_sources(
     pipeline_config: PipelineConfig,
     source_name: str | None,
 ) -> list[PipelineSourceConfig]:
+    """Return all pipeline sources or one named source for partial local runs.
+
+    This keeps source filtering reusable across CLI runs, Prefect flows, and
+    future deployment parameters.
+    """
+
     if source_name is None:
         return pipeline_config.sources
 

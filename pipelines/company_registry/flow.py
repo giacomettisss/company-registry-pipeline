@@ -17,6 +17,12 @@ def company_registry_ingestion_flow(
     platform_config_path: str = DEFAULT_PLATFORM_CONFIG_PATH,
     source_name: str | None = None,
 ) -> list[dict[str, str | int]]:
+    """Run source-to-raw ingestion for the company registry pipeline.
+
+    The flow composes shared platform pieces and keeps domain code focused on
+    which sources should run, not how extraction and loading are implemented.
+    """
+
     config_loader = ConfigLoader(PROJECT_ROOT)
     platform_config = config_loader.load_platform(platform_config_path)
     pipeline_config = config_loader.load_pipeline(pipeline_config_path)
@@ -40,6 +46,12 @@ def run_flow(
     platform_config_path: str = DEFAULT_PLATFORM_CONFIG_PATH,
     source_name: str | None = None,
 ) -> list[dict[str, str | int]]:
+    """Standard pipeline entrypoint used by the shared CLI convention.
+
+    New pipeline modules should expose the same function shape so the generic
+    CLI can run them without pipeline-specific registration.
+    """
+
     return company_registry_ingestion_flow(
         pipeline_config_path=pipeline_config_path,
         platform_config_path=platform_config_path,

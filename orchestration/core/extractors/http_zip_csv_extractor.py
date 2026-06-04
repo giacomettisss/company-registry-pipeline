@@ -8,7 +8,19 @@ from orchestration.core.extractors.base import BaseExtractor, ExtractionResult, 
 
 
 class HttpZipCsvExtractor(BaseExtractor):
+    """Extractor for HTTP ZIP sources that contain CSV-like files.
+
+    It supports the public company registry files used by this challenge and
+    can be reused by future sources with the same transport and file pattern.
+    """
+
     def extract(self, source: SourceConfig, row_limit: int) -> ExtractionResult:
+        """Download a ZIP file, read its CSV content, and return bounded rows.
+
+        Parsing behavior such as encoding, delimiter, header handling, and
+        fallback columns is controlled by the source options declared in YAML.
+        """
+
         response = requests.get(source.uri, timeout=120)
         response.raise_for_status()
 
@@ -19,6 +31,12 @@ class HttpZipCsvExtractor(BaseExtractor):
                 return self._read_csv(source, text_file, row_limit)
 
     def _find_csv_name(self, archive: ZipFile) -> str:
+        """Return the first CSV file in the archive, or the first regular file.
+
+        The fallback keeps the extractor tolerant of source files that do not
+        use a `.csv` extension but still contain delimited text.
+        """
+
         fallback_name = None
         for name in archive.namelist():
             if name.endswith("/"):
@@ -33,6 +51,12 @@ class HttpZipCsvExtractor(BaseExtractor):
         raise FileNotFoundError("No regular file found inside ZIP archive.")
 
     def _read_csv(self, source: SourceConfig, text_file: TextIOWrapper, row_limit: int) -> ExtractionResult:
+        """Parse CSV rows according to source options and the configured row limit.
+
+        The method preserves source-shaped string values and delegates type
+        standardization to dbt staging models.
+        """
+
         delimiter = source.options.get("delimiter", ",")
         has_header = bool(source.options.get("has_header", True))
         csv_reader = reader(text_file, delimiter=delimiter)
@@ -59,6 +83,12 @@ class HttpZipCsvExtractor(BaseExtractor):
         )
 
     def _normalize_row(self, row: list[str], expected_size: int) -> tuple[str | None, ...]:
+        """Trim or pad a row so it matches the configured column count.
+
+        This prevents irregular source rows from breaking the raw table insert
+        while keeping missing trailing values explicit as `None`.
+        """
+
         normalized = row[:expected_size]
         if len(normalized) < expected_size:
             normalized.extend([None] * (expected_size - len(normalized)))

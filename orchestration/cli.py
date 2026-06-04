@@ -14,6 +14,12 @@ PipelineRunner = Callable[[str, str, str | None], list[dict[str, str | int]]]
 
 
 def parse_args() -> Namespace:
+    """Parse the shared local CLI arguments for pipeline execution.
+
+    The CLI is intentionally generic so users can run pipelines by name without
+    memorizing Python module paths.
+    """
+
     parser = ArgumentParser(description="Run local data pipeline flows.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -37,6 +43,12 @@ def parse_args() -> Namespace:
 
 
 def run_pipeline(args: Namespace) -> None:
+    """Resolve and execute a pipeline flow from CLI arguments.
+
+    Pipeline-specific behavior is loaded by convention, keeping the shared CLI
+    stable as new domains are added.
+    """
+
     if args.source:
         validate_source_name(args.source)
 
@@ -53,6 +65,12 @@ def run_pipeline(args: Namespace) -> None:
 
 
 def load_pipeline_runner(pipeline_name: str) -> PipelineRunner:
+    """Load a pipeline run function using the shared naming convention.
+
+    A valid pipeline must expose `run_flow` from `pipelines.<name>.flow`, which
+    avoids central registries that would need edits for every new pipeline.
+    """
+
     validate_pipeline_name(pipeline_name)
     module_name = PIPELINE_FLOW_MODULE_TEMPLATE.format(pipeline_name=pipeline_name)
     module = import_module(module_name)
@@ -67,6 +85,12 @@ def load_pipeline_runner(pipeline_name: str) -> PipelineRunner:
 
 
 def validate_pipeline_name(pipeline_name: str) -> None:
+    """Validate pipeline names before importing modules dynamically.
+
+    The restriction keeps convention-based imports predictable and avoids
+    accepting arbitrary module paths from the command line.
+    """
+
     if not VALID_PIPELINE_NAME.match(pipeline_name):
         raise ValueError(
             "Invalid pipeline name. Use lowercase letters, numbers, and underscores only, "
@@ -75,6 +99,12 @@ def validate_pipeline_name(pipeline_name: str) -> None:
 
 
 def validate_source_name(source_name: str) -> None:
+    """Validate source names before selecting YAML source declarations.
+
+    Source names use the same convention as pipeline names so CLI filters stay
+    simple and safe.
+    """
+
     if not VALID_PIPELINE_NAME.match(source_name):
         raise ValueError(
             "Invalid source name. Use lowercase letters, numbers, and underscores only, "
@@ -83,6 +113,8 @@ def validate_source_name(source_name: str) -> None:
 
 
 def main() -> None:
+    """CLI entrypoint used by `python -m orchestration.cli`."""
+
     args = parse_args()
 
     if args.command == "run":
