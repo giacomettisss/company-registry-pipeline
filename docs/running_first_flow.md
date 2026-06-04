@@ -30,6 +30,8 @@ The first command avoids noisy local telemetry messages when Prefect starts its 
 
 Close any database client connected to `.\data\warehouse\data_platform.duckdb` before running the flow. DuckDB uses a local file and can block writes when another process keeps the database open.
 
+The full pipeline command runs source-to-raw ingestion and then orchestrates `dbt run`, `dbt snapshot`, and `dbt test`.
+
 ```cmd
 set PREFECT_SERVER_ANALYTICS_ENABLED=false
 python -m orchestration.cli run company_registry
@@ -40,6 +42,8 @@ To run only one source from the pipeline:
 ```cmd
 python -m orchestration.cli run company_registry --source cnaes
 ```
+
+Source-specific runs are for fast ingestion checks. They do not run the full dbt transformation suite because a partial source refresh may not represent a complete raw dataset.
 
 The CLI resolves `company_registry` by convention using `configs\pipelines\company_registry.yml` and `pipelines\company_registry\flow.py::run_flow`.
 

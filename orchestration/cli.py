@@ -10,7 +10,8 @@ PIPELINE_FLOW_MODULE_TEMPLATE = "pipelines.{pipeline_name}.flow"
 PIPELINE_RUNNER_FUNCTION = "run_flow"
 VALID_PIPELINE_NAME = re.compile(r"^[a-z][a-z0-9_]*$")
 
-PipelineRunner = Callable[[str, str, str | None], list[dict[str, str | int]]]
+PipelineRunResult = dict[str, list[dict[str, str | int]]]
+PipelineRunner = Callable[[str, str, str | None], PipelineRunResult]
 
 
 def parse_args() -> Namespace:

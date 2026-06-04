@@ -14,6 +14,7 @@ class TransformationConfig:
     """
 
     type: str
+    target: str
     project_dir: Path
     profiles_dir: Path
 
@@ -103,6 +104,7 @@ class ConfigLoader:
             warehouse_path=self._resolve_path(warehouse["path"]),
             transformation=TransformationConfig(
                 type=transformation["type"],
+                target=transformation.get("target", "local"),
                 project_dir=self._resolve_path(transformation["project_dir"]),
                 profiles_dir=self._resolve_path(transformation["profiles_dir"]),
             ),

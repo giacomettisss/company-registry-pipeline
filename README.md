@@ -166,7 +166,7 @@ source -> raw -> staging -> intermediate -> marts
 - `intermediate`: reusable business transformations that combine or enrich staging models before final consumption.
 - `marts`: final analytical models, such as dimensions and fact tables, designed for reporting, metrics, and downstream users.
 
-Prefect is responsible for moving data from `source` to `raw`. dbt is responsible for everything after `raw`: `staging`, `intermediate`, tests, snapshots, and `marts`.
+Prefect is responsible for moving data from `source` to `raw` and orchestrating the dbt commands. dbt is responsible for everything after `raw`: `staging`, `intermediate`, tests, snapshots, and `marts`.
 
 ## Snapshot Strategy
 
@@ -236,6 +236,7 @@ The repository currently includes an end-to-end local company registry pipeline:
 - HTTP ZIP CSV extractor;
 - DuckDB raw table loader;
 - shared Prefect ingestion task;
+- shared Prefect dbt command task;
 - domain flow composition;
 - generic local CLI resolved by convention;
 - local dbt DuckDB profile;
@@ -255,7 +256,7 @@ Seeds are not used in the current scope because source and reference data are lo
 
 ## Local CLI
 
-The project includes a straightforward local CLI entrypoint for running the current company registry flow without requiring Prefect deployments or workers.
+The project includes a straightforward local CLI entrypoint for running the current company registry flow without requiring Prefect deployments or workers. A full pipeline run orchestrates source-to-raw ingestion, `dbt run`, `dbt snapshot`, and `dbt test`.
 
 ```cmd
 set PREFECT_SERVER_ANALYTICS_ENABLED=false
@@ -268,6 +269,8 @@ Run only one source from the pipeline:
 python -m orchestration.cli run company_registry --source cnaes
 ```
 
+Source-specific runs are intended for fast ingestion development and validation. They do not run the full dbt transformation suite because a partial source refresh may not represent a complete raw dataset.
+
 The CLI is intentionally convention-based so the user can run a pipeline by name instead of memorizing module paths or editing a central registry:
 
 ```text
@@ -279,6 +282,7 @@ This improves usability and extensibility at the same time:
 
 - the user gets one stable command for every pipeline;
 - a new source can be tested with `--source`;
+- full pipeline runs include transformation and quality validation;
 - a new pipeline does not require changing shared CLI code;
 - the code remains open for extension through naming conventions and standard entrypoints.
 
@@ -312,7 +316,7 @@ pip install -r requirements-dev.txt
 python -m pytest tests
 ```
 
-Run the full dbt transformation and quality suite:
+The full CLI run already orchestrates `dbt run`, `dbt snapshot`, and `dbt test`. You can still run dbt directly when developing or debugging transformation models:
 
 ```cmd
 dbt deps --project-dir dbt_data_platform --profiles-dir dbt_data_platform
@@ -321,7 +325,7 @@ dbt snapshot --project-dir dbt_data_platform --profiles-dir dbt_data_platform
 dbt test --project-dir dbt_data_platform --profiles-dir dbt_data_platform
 ```
 
-`dbt deps` is kept in the validation flow even though the current project does not require external dbt packages.
+`dbt deps` is listed for direct dbt debugging even though the current project does not require external dbt packages.
 
 ## End-to-End Local Validation
 
@@ -330,10 +334,6 @@ Run the complete local validation from the project root:
 ```cmd
 set PREFECT_SERVER_ANALYTICS_ENABLED=false
 python -m orchestration.cli run company_registry
-dbt deps --project-dir dbt_data_platform --profiles-dir dbt_data_platform
-dbt run --project-dir dbt_data_platform --profiles-dir dbt_data_platform
-dbt snapshot --project-dir dbt_data_platform --profiles-dir dbt_data_platform
-dbt test --project-dir dbt_data_platform --profiles-dir dbt_data_platform
 python -m pytest tests
 ```
 

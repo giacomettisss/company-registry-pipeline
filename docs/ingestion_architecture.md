@@ -193,7 +193,7 @@ Domain flows do not implement extraction or loading details. They select sources
 The platform currently has two observability layers:
 
 - source-to-raw ingestion logs emitted by our reusable Prefect task;
-- dbt execution logs emitted by `dbt run`, `dbt test`, and `dbt snapshot`.
+- dbt execution logs emitted by `dbt run`, `dbt snapshot`, and `dbt test` tasks orchestrated by Prefect.
 
 For ingestion, the shared `ingest_source` task emits source-level logs for the main operational events:
 

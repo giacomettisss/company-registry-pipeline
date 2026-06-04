@@ -106,7 +106,7 @@ Install dependencies:
 pip install -r requirements-dev.txt
 ```
 
-Run the local ingestion flow:
+Run the full local pipeline. This command runs source-to-raw ingestion and then orchestrates `dbt run`, `dbt snapshot`, and `dbt test` from the same Prefect flow:
 
 ```cmd
 set PREFECT_SERVER_ANALYTICS_ENABLED=false
@@ -119,7 +119,9 @@ Run only one source:
 python -m orchestration.cli run company_registry --source cnaes
 ```
 
-Run dbt models:
+Source-specific runs are for fast ingestion checks. They do not run the full dbt transformation suite because a partial source refresh may not represent a complete raw dataset.
+
+When developing or debugging transformations directly, run dbt models:
 
 ```cmd
 dbt run --project-dir dbt_data_platform --profiles-dir dbt_data_platform

@@ -21,9 +21,10 @@ The local execution path is:
 2. Reusable extractors read source-specific formats.
 3. Reusable loaders write bounded local samples into raw DuckDB tables using the source load strategy contract.
 4. Reusable Prefect tasks compose extraction and loading.
-5. Domain flows orchestrate shared tasks for each pipeline.
-6. dbt builds staging, intermediate, and mart models from those raw tables.
-7. dbt tests validate quality and business rules.
+5. Domain flows orchestrate shared ingestion tasks for each pipeline.
+6. Prefect runs the configured dbt transformation commands.
+7. dbt builds staging, intermediate, and mart models from raw tables.
+8. dbt snapshots and tests validate history, quality, and business rules.
 
 For SCD Type 2 history, snapshots should read a current-state dbt model with a stable unique key. In this project, the share capital snapshot reads the company profile intermediate model instead of raw or staging data. This keeps the snapshot stable if raw loading later moves to append-only ingestion and staging continues to represent standardized source records.
 
