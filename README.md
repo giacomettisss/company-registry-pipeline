@@ -32,7 +32,7 @@ configs/platforms/local.yml
 configs/pipelines/<domain>.yml
 pipelines/<domain>/
 dbt_data_platform/models/<domain>/
-docs/<domain>/
+docs/<domain>/                  # optional for domain-specific decisions
 ```
 
 Shared platform settings are defined in environment-specific files under `configs/platforms/`. Pipeline-specific ingestion declarations live in `configs/pipelines/<domain>.yml`.

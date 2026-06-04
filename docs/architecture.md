@@ -11,7 +11,7 @@ Each pipeline is a domain module that follows the same contract:
 - `orchestration/cli.py` for the generic local CLI.
 - `pipelines/<domain>/` for domain flow composition.
 - `dbt_data_platform/models/<domain>/` for dbt transformations.
-- `docs/<domain>/` for domain-specific design decisions.
+- `docs/<domain>/` when a pipeline needs domain-specific design decisions.
 
 Adding a pipeline should mean adding a new domain module and config file. Shared code should not require edits for every new pipeline.
 

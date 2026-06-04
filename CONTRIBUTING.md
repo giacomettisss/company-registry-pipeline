@@ -108,7 +108,7 @@ A new pipeline should follow the existing convention:
 configs/pipelines/<pipeline_name>.yml
 pipelines/<pipeline_name>/flow.py::run_flow
 dbt_data_platform/models/<pipeline_name>/
-docs/<pipeline_name>/
+docs/<pipeline_name>/                  # optional for domain-specific decisions
 ```
 
 The shared CLI should not need pipeline-specific edits. A new pipeline module should expose:
